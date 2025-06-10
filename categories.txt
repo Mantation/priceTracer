@@ -1,0 +1,2 @@
+office|stationery
+gaming|media

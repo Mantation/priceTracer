@@ -1,0 +1,14 @@
+computer|electronics
+office|stationery
+gaming|media
+clothes|shoes|clothing|sports|sport|training
+baby|toddler|toys|children
+beauty
+health|personal care
+liquor|alcohol                       takealot_winecases
+jewellery|luggage|travel             takealot_not_applicable
+pets                                 takealot
+homeware|household|grocery|home      takealot
+books|courses              takealot_use_local
+outdoor|outdoors|camping   takealot_incomplete
+garden|pool|partio         takealot_incomplete
