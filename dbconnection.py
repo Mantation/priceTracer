@@ -1,4 +1,5 @@
 import mysql.connector
+from mysql.connector import pooling
 
 @property
 def uniqueId(self):
@@ -16,50 +17,44 @@ dbconnection = {
 
 pointer = "local"
 
+dbconfig = {
+    'host':'154.0.168.118',
+    'user':'weoblyak_admin',
+    'password':'Khwezla@2014',
+    'database':'weoblyak_weOblij',
+    'port':3306
+}
+
 def init_db(site="amazon", point_to="local"):
     if point_to == "local":
-        primary_host = "localhost"
-        if site == "amazon":
-            dbconnection["items"] = "items"
-            dbconnection["price"] = "prices"
-            primary_host = "localhost"
-        else: 
-            dbconnection["items"] = "items"
-            dbconnection["price"] = "prices"
-            primary_host = "localhost"
-
-        mydb = mysql.connector.connect(
-                host= "localhost",
-                user="root",
-                password="",
-                database="market"
-            )
-    else:
-        primary_host = "154.0.168.118"
+        
         if site == "amazon":
             dbconnection["items"] = "amazon_items"
             dbconnection["price"] = "amazon_prices"
-            primary_host = "154.0.168.118"
         else: 
             dbconnection["items"] = "takealot_items"
             dbconnection["price"] = "takealot_prices"
-            primary_host = "154.0.168.118"
-
-        mydb = mysql.connector.connect(
-                host= "154.0.168.118",
-                user="weoblyak_admin",
-                password="Khwezla@2014",
-                database="weoblyak_weOblij",
-                port=3306
-            )
+    else:
+        if site == "amazon":
+            dbconnection["items"] = "amazon_items"
+            dbconnection["price"] = "amazon_prices"
+        else: 
+            dbconnection["items"] = "takealot_items"
+            dbconnection["price"] = "takealot_prices"
+            
+    connection_pool = pooling.MySQLConnectionPool(pool_name="tracer",
+                                   pool_size=5,
+                                   autocommit=True,
+                                   pool_reset_session=True,
+                                   **dbconfig)
 
     print("connected!")
 
 
-    return mydb
+    return connection_pool
 
-def showAllItems(database, img):
-    mydb = database
+def showAllItems(connection_pool, img):
+    mydb = connection_pool.get_connection()
     mycursor = mydb.cursor()
     mycursor.execute("SELECT * FROM "+dbconnection["items"])
     myresult = mycursor.fetchall()
@@ -70,9 +65,9 @@ def showAllItems(database, img):
             print(row[2])
             print("<><><><><><><><><><>")
 
-def pricesWithinTheWeek(database, uniqueId):
+def pricesWithinTheWeek(connection_pool, uniqueId):
     inWeek = False
-    mydb = database
+    mydb = connection_pool.get_connection()
     mycursor = mydb.cursor()
     x = None
     sql = "SELECT * FROM "+dbconnection["price"]+" WHERE item_id = %s AND WEEK(date, 1) = WEEK(CURDATE(), 1) AND YEAR(date) = YEAR(CURDATE())"
@@ -86,9 +81,9 @@ def pricesWithinTheWeek(database, uniqueId):
 
     return inWeek
 
-def itemExists(database, link):
+def itemExists(connection_pool, link):
     Found = False
-    mydb = database
+    mydb = connection_pool.get_connection()
     mycursor = mydb.cursor()
     sql = "SELECT * FROM "+dbconnection["items"]+" WHERE item_link = %s"
     val = (link,)
@@ -102,9 +97,9 @@ def itemExists(database, link):
 
     return Found
 
-def itemImageExists(database, image):
+def itemImageExists(connection_pool, image):
     Found = False
-    mydb = database
+    mydb = connection_pool.get_connection()
     mycursor = mydb.cursor()
     sql = "SELECT * FROM "+dbconnection["items"]+" WHERE item_image = %s"
     val = (image,)
@@ -118,9 +113,9 @@ def itemImageExists(database, image):
 
     return Found
 
-def getUniqueitemId(database, link):
+def getUniqueitemId(connection_pool, link):
     uniqueId = 0
-    mydb = database
+    mydb = connection_pool.get_connection()
     mycursor = mydb.cursor()
     sql = "SELECT * FROM "+dbconnection["items"]+" WHERE item_link = %s LIMIT 1"
     val = (link,)
@@ -134,9 +129,9 @@ def getUniqueitemId(database, link):
     
     return uniqueId
     
-def loadItem(database, item_array):
+def loadItem(connection_pool, item_array):
     last_id = 0
-    mydb = database
+    mydb = connection_pool.get_connection()
     mycursor = mydb.cursor()
     # Define the INSERT statement
     sql = "INSERT INTO "+dbconnection["items"]+" (id,item_category,item_subcategory,item_type,item_description, item_image, item_link) VALUES (%s, %s,%s, %s, %s,%s, %s)"
@@ -160,8 +155,8 @@ def loadItem(database, item_array):
 
     return last_id
 
-def loadPrice(database, item_array):
-    mydb = database
+def loadPrice(connection_pool, item_array):
+    mydb = connection_pool.get_connection()
     mycursor = mydb.cursor()
     # Define the INSERT statement
     sql = "INSERT INTO "+dbconnection["price"]+" (id,item_id, item_price, date, time) VALUES (%s, %s,%s,%s,%s)"
@@ -181,5 +176,7 @@ def loadPrice(database, item_array):
         print("Insert failed.")
 
 #print(pricesWithinTheWeek(init_db()))
-
 #init_db(site="takealot",point_to=pointer)
+            
+
+#showAllItems(init_db(site="local",point_to="amazon"),"")
