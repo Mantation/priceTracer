@@ -1,5 +1,5 @@
 import mysql.connector
-from mysql.connector import pooling
+from mysql.connector import pooling, errors
 
 @property
 def uniqueId(self):
@@ -26,6 +26,7 @@ dbconfig = {
 }
 
 def init_db(site="amazon", point_to="local"):
+    connected = False
     if point_to == "local":
         
         if site == "amazon":
@@ -41,12 +42,29 @@ def init_db(site="amazon", point_to="local"):
         else: 
             dbconnection["items"] = "takealot_items"
             dbconnection["price"] = "takealot_prices"
-            
-    connection_pool = pooling.MySQLConnectionPool(pool_name="tracer",
-                                   pool_size=5,
-                                   autocommit=True,
-                                   pool_reset_session=True,
-                                   **dbconfig)
+    
+    connection_count = 0
+    while not connected:     
+        try:
+            connection_count+=1
+            print("Attempting database connection number "+ str(connection_count))
+            if connection_count > 10:
+                input("Press Enter to continue...8")
+                
+            connection_pool = pooling.MySQLConnectionPool(pool_name="tracer",
+                                    pool_size=5,
+                                    autocommit=True,
+                                    pool_reset_session=True,
+                                    **dbconfig)
+            connected = True
+        except errors.InterfaceError as e:
+            print(f"Connectivity error: {e}")
+        except errors.DatabaseError as e:
+            print(f"Connectivity error: {e}")
+        except errors.OperationalError as e:
+            print(f"Connectivity error: {e}")
+        except Exception as e:
+            print(f"Read Timeout error: {e}")
 
     print("connected!")
 
@@ -178,5 +196,5 @@ def loadPrice(connection_pool, item_array):
 #print(pricesWithinTheWeek(init_db()))
 #init_db(site="takealot",point_to=pointer)
             
-
+#init_db(site="amazon", point_to="local")
 #showAllItems(init_db(site="local",point_to="amazon"),"")
