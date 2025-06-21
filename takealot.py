@@ -127,7 +127,7 @@ def getExpandedCategoriesMenuByIndex (driver):
         WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'transition-horizontal-module_slide_3FOk5')))
     except TimeoutException:
-        input("Press Enter to continue...")
+        input("Press Enter to continue...1")
     getSeeMoreButton(driver)
     container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
     aTags = container.find_elements(By.TAG_NAME, "a")
@@ -142,7 +142,7 @@ def getExpandedCategoriesMenuByIndex (driver):
     #defaultCount = 2
     #Defaul defaultCount = 2
     for aTag in aTags:
-        #if expanded_count > 4:
+        #if defaultCount > 1:
         if expanded_count > defaultCount or (len(aTags)-1) == expanded_count:
             print("Menu num >>>>>>>>>>>>>>>>>>  "+str(expanded_count+1))
             try:
@@ -198,7 +198,7 @@ def getSubMenuCategories(driver, straight_to_refined_categories):
         WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'transition-horizontal-module_slide_3FOk5')))
     except TimeoutException:
-        input("Press Enter to continue...")
+        input("Press Enter to continue...2")
     getSeeMoreButton(driver)
     container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
     aTags = container.find_elements(By.TAG_NAME, "a")
@@ -213,8 +213,8 @@ def getSubMenuCategories(driver, straight_to_refined_categories):
 
     #defaultCount = 2
     for aTag in aTags:
-        if sub_count > 5:
-        #if sub_count > defaultCount or (len(aTags)-1) == sub_count:
+        #if sub_count > 5:
+        if sub_count > defaultCount or (len(aTags)-1) == sub_count:
             print("Sub menu num >>>>>>>>>>>>>>>>>>  "+str(sub_count+1))
             try:
                 container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
@@ -346,7 +346,7 @@ def getSubMenuCategoriesOptions(driver):
         WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'transition-horizontal-module_slide_3FOk5')))
     except TimeoutException:
-        input("Press Enter to continue...")
+        input("Press Enter to continue...3")
     getSeeMoreButton(driver)
     container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
     aTags = container.find_elements(By.TAG_NAME, "a")
@@ -454,7 +454,7 @@ def getSubMenuCategoriesXTraOptions(driver):
         WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'transition-horizontal-module_slide_3FOk5')))
     except TimeoutException:
-        input("Press Enter to continue...")
+        input("Press Enter to continue...4")
     getSeeMoreButton(driver)
     container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
     aTags = container.find_elements(By.TAG_NAME, "a")
@@ -586,8 +586,12 @@ def clickLoadMoreButtonPresent(driver):
                         )
                         loadMore = driver.find_element(By.CLASS_NAME, "search-listings-module_load-more_OwyvW")
                         # Interact with the element
-                        driver.execute_script("arguments[0].click();", loadMore)
-                        print("clicked >>> Load More")
+                        try:
+                            driver.execute_script("arguments[0].click();", loadMore)
+                            print("clicked >>> Load More")
+                        except TimeoutException:
+                            print("Click attempt timed out, retrying...")
+                        #driver.execute_script("arguments[0].click();", loadMore)
                         if elementExists(driver.find_elements(By.CLASS_NAME, "search-listings-module_load-more_OwyvW")):
                             loadMoreButtonExists = True
                         else:
@@ -617,7 +621,12 @@ def clickLoadMoreButtonPresent(driver):
                         )
                         loadMore = driver.find_element(By.CLASS_NAME, "search-listings-module_load-more_OwyvW")
                         # Interact with the element
-                        driver.execute_script("arguments[0].click();", loadMore)
+                        try:
+                            driver.execute_script("arguments[0].click();", loadMore)
+                            print("clicked >>> Load More")
+                        except TimeoutException:
+                            print("Click attempt timed out, retrying...")
+                        #driver.execute_script("arguments[0].click();", loadMore)
                         print("clicked >>> Load More")
                         if elementExists(driver.find_elements(By.CLASS_NAME, "search-listings-module_load-more_OwyvW")):
                             loadMoreButtonExists = True
@@ -734,7 +743,7 @@ def getItems(driver):
         WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.CLASS_NAME, 'grid-margin-x')))
     except TimeoutException:
-        input("Press Enter to continue...")
+        input("Press Enter to continue...5")
     onFIrstPage = False
     counter = 0
     price = 0
@@ -869,7 +878,7 @@ def getItemDetails(driver,onNewWindow,advertAmount):
                     time.sleep(5)
                     WebDriverWait(driver, 5).until(
                     EC.presence_of_element_located((By.CLASS_NAME, 'buybox-offer-module_single-item_18a_g')))
-                except StaleElementReferenceException:
+                except TimeoutException:
                     try:
                         driver.refresh()
                         time.sleep(5)
@@ -882,16 +891,24 @@ def getItemDetails(driver,onNewWindow,advertAmount):
                             WebDriverWait(driver, 5).until(
                             EC.presence_of_element_located((By.CLASS_NAME, 'buybox-offer-module_single-item_18a_g')))
                         except TimeoutException:
-                            driver.refresh()
-                            WebDriverWait(driver, 5).until(
-                            EC.presence_of_element_located((By.CLASS_NAME, 'buybox-offer-module_list-price_2GEsn')))
                             try:
                                 driver.refresh()
                                 WebDriverWait(driver, 5).until(
-                                EC.presence_of_element_located((By.CLASS_NAME, 'error-module_button_20I_9')))
+                                EC.presence_of_element_located((By.CLASS_NAME, 'buybox-offer-module_list-price_2GEsn')))
                             except TimeoutException:
-                                itemExists = False
-                                print ("Skipping Item.......")
+                                try:
+                                    driver.refresh()
+                                    WebDriverWait(driver, 5).until(
+                                    EC.presence_of_element_located((By.CLASS_NAME, 'error-module_button_20I_9')))
+                                except TimeoutException:
+                                    try:
+                                        input("Press Enter to continue...7")
+                                        WebDriverWait(driver, 5).until(
+                                        EC.presence_of_element_located((By.CLASS_NAME, 'buybox-offer-module_single-item_18a_g')))
+                                    except TimeoutException:
+                                        itemExists = False
+                                        print ("Skipping Item.......")
+        
         
 
     if itemExists:
@@ -917,7 +934,7 @@ def getItemDetails(driver,onNewWindow,advertAmount):
             except NoSuchElementException:
                 price = advertAmount
         except TimeoutException:
-            input("Press Enter to continue...")
+            input("Press Enter to continue...6")
         
         item_link = driver.current_url
         print(title.get_attribute("innerText").encode("utf-8"))
@@ -958,7 +975,6 @@ def getItemDetails(driver,onNewWindow,advertAmount):
                     time.sleep(5)
             except NoSuchElementException:
                     time.sleep(5)
-
 
 
 #main site
@@ -1101,7 +1117,8 @@ with open('categories.txt', 'r') as file:
                                     if "finder" not in li.get_attribute("innerText").lower() and "charcoal" not in li.get_attribute("innerText").lower():
                                         #Remove charcoal part
                                         #default counter > 0
-                                        if counter > 2:
+                                        #if counter > 2:
+                                        if counter > 11:
                                             takealot["item_category"] = li.get_attribute("innerText")
                                             print("option is "+li.get_attribute("innerText"))
                                             print("class is ["+li.get_attribute("class").strip()+"]")
