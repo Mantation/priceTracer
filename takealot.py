@@ -286,7 +286,12 @@ def getSubMenuCategories(driver, straight_to_refined_categories):
                     #aTag.click()
                     time.sleep(5)
                     getItems(driver)
+                    inner_sub_container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
+                    inner_sub_aTags = inner_sub_container.find_elements(By.TAG_NAME, "a")
+                    driver.execute_script("arguments[0].click();", inner_sub_aTags[defaultCount])
             except StaleElementReferenceException:
+                container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
+                aTags = container.find_elements(By.TAG_NAME, "a")
                 time.sleep(5)
                 getSeeMoreButton(driver)
                 container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
@@ -312,7 +317,7 @@ def getSubMenuCategories(driver, straight_to_refined_categories):
                                 break
                         inner_indexCounter +=1
                     
-                    if len(inner_aTags) ==  inner_indexCounter+1:
+                    if len(inner_aTags) ==  inner_indexCounter+2:
                         getItems(driver)
                         time.sleep(5)
                         inner_sub_container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
@@ -324,6 +329,7 @@ def getSubMenuCategories(driver, straight_to_refined_categories):
                 else:
                     time.sleep(5)
                     getItems(driver)
+                    time.sleep(5)
 
 
         if sub_count == len(aTags)-1:
@@ -362,6 +368,8 @@ def getSubMenuCategoriesOptions(driver):
     if len(aTags) > defaultCount+1:
         #defaultCount = 2
         for aTag in aTags:
+            #######################################################################################
+            #if sub_count > 210:
             if sub_count > defaultCount or (len(aTags)-1) == sub_count:
                 print("Sub menu num >>>>>>>>>>>>>>>>>>  "+str(sub_count+1))
                 try:
@@ -371,6 +379,7 @@ def getSubMenuCategoriesOptions(driver):
                     getSeeMoreButton(driver)
                     print("Now starting the ["+aTag.get_attribute("innerText")+"] scenario")
                     takealot["item_type"] = aTag.get_attribute("innerText")
+
                     if len(aTags) - defaultCount > 1:
                         container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
                         aTags = container.find_elements(By.TAG_NAME, "a")
@@ -448,6 +457,10 @@ def getSubMenuCategoriesOptions(driver):
     else:
         time.sleep(5)
         getItems(driver)
+        container = driver.find_element(By.CLASS_NAME, "transition-horizontal-module_slide_3FOk5")
+        aTags = container.find_elements(By.TAG_NAME, "a")
+        driver.execute_script("arguments[0].click();", aTags[defaultCount-1])
+        time.sleep(5)
 
 def getSubMenuCategoriesXTraOptions(driver):
     try:
@@ -756,7 +769,7 @@ def getItems(driver):
 
     for article in articles:
         if True:
-        #if counter > 1960:
+        #if counter > 210:
             print("item num >>>>>>>>>>>>>>>>>>  "+str(counter+1))
             print("article total >>>>>>>>>>>>>>>>>>  "+str(len(articles)))
             #Load More Button
@@ -1118,7 +1131,7 @@ with open('categories.txt', 'r') as file:
                                         #Remove charcoal part
                                         #default counter > 0
                                         #if counter > 2:
-                                        if counter > 11:
+                                        if counter > 12:
                                             takealot["item_category"] = li.get_attribute("innerText")
                                             print("option is "+li.get_attribute("innerText"))
                                             print("class is ["+li.get_attribute("class").strip()+"]")
